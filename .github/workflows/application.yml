@@ -1,0 +1,42 @@
+name: Application Deployment
+
+on:
+  workflow_call:
+
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy Application
+    runs-on: ubuntu-latest
+    environment: development
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
+
+      - name: Zip Application Code
+        run: |
+          zip -r wordpress.zip . -x ".git/*" ".github/*" "terraform/*" ".gitignore" "**/*.zip"
+
+      - name: Upload Code to S3
+        run: |
+          aws s3 cp wordpress.zip s3://chongzhihong-s3-bucket/wordpress.zip --region us-east-1
+
+      - name: Trigger ASG Instance Refresh
+        run: |
+          echo "Triggering ASG Instance Refresh to deploy new application code..."
+          aws autoscaling start-instance-refresh \
+            --auto-scaling-group-name wordpress-asg \
+            --preferences '{"MinHealthyPercentage": 50, "InstanceWarmup": 300}'

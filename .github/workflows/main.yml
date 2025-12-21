@@ -1,0 +1,45 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  filter:
+    runs-on: ubuntu-latest
+    outputs:
+      infra: ${{ steps.changes.outputs.infra }}
+      app: ${{ steps.changes.outputs.app }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            infra:
+              - 'terraform/**'
+            app:
+              - '!terraform/**'
+              - '.github/workflows/application.yml'
+
+  infrastructure:
+    needs: filter
+    # Run if manual trigger OR terraform files changed
+    if: github.event_name == 'workflow_dispatch' || needs.filter.outputs.infra == 'true'
+    uses: ./.github/workflows/infrastructure.yml
+    secrets: inherit
+
+  application:
+    needs: [filter, infrastructure]
+    # Run if:
+    # 1. Manual trigger OR
+    # 2. App files changed OR
+    # 3. Infra was successful (to ensure any infra updates get picked up by a refresh)
+    if: |
+      always() && 
+      (github.event_name == 'workflow_dispatch' || needs.filter.outputs.app == 'true' || needs.infrastructure.result == 'success') &&
+      (needs.infrastructure.result == 'success' || needs.infrastructure.result == 'skipped')
+    uses: ./.github/workflows/application.yml
+    secrets: inherit
