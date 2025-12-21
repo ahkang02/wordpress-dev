@@ -77,3 +77,8 @@ import {
   to = module.compute.aws_autoscaling_group.main
   id = "wordpress-asg"
 }
+
+import {
+  to = module.network.aws_eip.nat
+  id = "eipalloc-012802b54b1f66d2f"
+}
