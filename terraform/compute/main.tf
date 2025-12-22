@@ -1,7 +1,8 @@
 resource "aws_launch_template" "main" {
-  name          = "wordpress-lt"
-  image_id      = "ami-04b70fa74e45c3917" # Ubuntu 24.04 LTS (Canonical), check region! Assuming us-east-1 for now based on JSON output.
-  instance_type = var.instance_type
+  name                   = "wordpress-lt"
+  image_id               = "ami-0c101f26f147fa7fd" # Amazon Linux 2023 AMI (us-east-1)
+  instance_type          = var.instance_type
+  update_default_version = true # Creates new version on changes
 
   network_interfaces {
     associate_public_ip_address = false # Private instance behind ALB
