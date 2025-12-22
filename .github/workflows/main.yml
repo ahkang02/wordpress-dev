@@ -34,6 +34,9 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || needs.filter.outputs.infra == 'true'
     uses: ./.github/workflows/infrastructure.yml
     secrets: inherit
+    permissions:
+      id-token: write
+      contents: read
 
   application:
     needs: [filter, infrastructure]
@@ -47,3 +50,6 @@ jobs:
       (needs.infrastructure.result == 'success' || needs.infrastructure.result == 'skipped')
     uses: ./.github/workflows/application.yml
     secrets: inherit
+    permissions:
+      id-token: write
+      contents: read
