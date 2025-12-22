@@ -114,5 +114,14 @@ import {
   to = module.compute.aws_autoscaling_policy.cpu
   id = "wordpress-asg/Target Tracking Policy"
 }
+# Private Route Table Associations - use the specific association IDs so Terraform can adopt and update them
+import {
+  to = module.network.aws_route_table_association.private[0]
+  id = "rtbassoc-0792aeabb0c460d50"
+}
 
+import {
+  to = module.network.aws_route_table_association.private[1]
+  id = "rtbassoc-0f83dbe98ed75c756"
+}
 
