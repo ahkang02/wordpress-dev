@@ -1,0 +1,71 @@
+# =========================
+# OpenTofu / Terraform
+# =========================
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/*.tfplan
+terraform/tfplan
+terraform/.terraform.lock.hcl
+terraform/crash.log
+terraform/*.auto.tfvars
+terraform/override.tf
+terraform/override.tf.json
+terraform/*_override.tf
+terraform/*_override.tf.json
+
+# =========================
+# WordPress
+# =========================
+# Uploads directory (user content)
+wp-content/uploads/
+
+# Cache and backup files
+wp-content/cache/
+wp-content/backup-db/
+wp-content/backups/
+wp-content/upgrade/
+
+# WordPress debug log
+wp-content/debug.log
+
+# wp-config with sensitive data (use wp-config-sample.php as template)
+wp-config.php
+
+# =========================
+# IDE & Editors
+# =========================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# =========================
+# Build artifacts
+# =========================
+*.zip
+*.tar.gz
+node_modules/
+
+# =========================
+# Environment & Secrets
+# =========================
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+
+# =========================
+# OS Files
+# =========================
+Thumbs.db
+.DS_Store

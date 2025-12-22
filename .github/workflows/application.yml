@@ -36,6 +36,20 @@ jobs:
 
       - name: Trigger ASG Instance Refresh
         run: |
+          echo "Checking for existing instance refresh..."
+          REFRESH_STATUS=$(aws autoscaling describe-instance-refreshes \
+            --auto-scaling-group-name wordpress-asg \
+            --query 'InstanceRefreshes[0].Status' \
+            --output text 2>/dev/null || echo "None")
+          
+          if [ "$REFRESH_STATUS" = "Pending" ] || [ "$REFRESH_STATUS" = "InProgress" ]; then
+            echo "Cancelling existing instance refresh (status: $REFRESH_STATUS)..."
+            aws autoscaling cancel-instance-refresh \
+              --auto-scaling-group-name wordpress-asg
+            echo "Waiting for cancellation to complete..."
+            sleep 30
+          fi
+          
           echo "Triggering ASG Instance Refresh to deploy new application code..."
           aws autoscaling start-instance-refresh \
             --auto-scaling-group-name wordpress-asg \
