@@ -44,20 +44,7 @@ jobs:
         run: tofu validate
 
       - name: OpenTofu Plan
-        id: plan
-        run: |
-          tofu plan -detailed-exitcode -out=tfplan 2>&1 | tee plan_output.txt; EXIT_CODE=${PIPESTATUS[0]}
-          echo "Plan exit code: $EXIT_CODE"
-          echo "exitcode=$EXIT_CODE" >> $GITHUB_OUTPUT
-          echo "=== Plan Summary ==="
-          tail -20 plan_output.txt
-          exit 0
-
-      - name: Debug Plan Exit Code
-        run: |
-          echo "Plan exit code: ${{ steps.plan.outputs.exitcode }}"
-          echo "Plan outcome: ${{ steps.plan.outcome }}"
+        run: tofu plan -out=tfplan
 
       - name: OpenTofu Apply
-        if: steps.plan.outputs.exitcode == '2'
         run: tofu apply -auto-approve tfplan
