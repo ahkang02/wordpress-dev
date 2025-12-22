@@ -114,15 +114,20 @@ import {
   to = module.compute.aws_autoscaling_policy.cpu
   id = "wordpress-asg/Target Tracking Policy"
 }
-# Private Route Table Associations - use current AWS associations so Terraform can import them
-# Format: subnet_id/route_table_id (using existing Repte Tables found in AWS)
+# Private Route Table (use rtb-03858c06d84861695 which is now correctly associated)
+import {
+  to = module.network.aws_route_table.private
+  id = "rtb-03858c06d84861695"
+}
+
+# Private Route Table Associations - match current associations
 import {
   to = module.network.aws_route_table_association.private[0]
-  id = "subnet-0e3bb916520b90671/rtb-0c73a7fe8d8787c03"
+  id = "subnet-0e3bb916520b90671/rtb-03858c06d84861695"
 }
 
 import {
   to = module.network.aws_route_table_association.private[1]
-  id = "subnet-0c8de53430bc22f9b/rtb-0f5b857ab1a0d525a"
+  id = "subnet-0c8de53430bc22f9b/rtb-03858c06d84861695"
 }
 
