@@ -97,7 +97,7 @@ resource "aws_autoscaling_group" "main" {
 }
 
 resource "aws_autoscaling_policy" "cpu" {
-  name                   = "wordpress-cpu-policy"
+  name                   = "Target Tracking Policy"
   autoscaling_group_name = aws_autoscaling_group.main.name
   policy_type            = "TargetTrackingScaling"
 

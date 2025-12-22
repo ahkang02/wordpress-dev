@@ -109,3 +109,25 @@ import {
   to = module.compute.aws_launch_template.main
   id = "lt-03707aa2b66e4e31f"
 }
+
+import {
+  to = module.compute.aws_autoscaling_policy.cpu
+  id = "wordpress-asg/Target Tracking Policy"
+}
+
+# Private Route Table (use rtb-03858c06d84861695 which is wordpress-private-rt)
+import {
+  to = module.network.aws_route_table.private
+  id = "rtb-03858c06d84861695"
+}
+
+# Private Route Table Associations - use the existing associations
+import {
+  to = module.network.aws_route_table_association.private[0]
+  id = "subnet-0e3bb916520b90671/rtb-0c73a7fe8d8787c03"
+}
+
+import {
+  to = module.network.aws_route_table_association.private[1]
+  id = "subnet-0c8de53430bc22f9b/rtb-0f5b857ab1a0d525a"
+}
