@@ -13,59 +13,12 @@ resource "aws_launch_template" "main" {
     name = "LabInstanceProfile"
   }
 
-  user_data = base64encode(<<-EOF
-#!/bin/bash
-exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
-set -ex
-
-echo "=== Starting user data script at $(date) ==="
-
-# Wait for instance to be fully ready
-sleep 10
-
-# Install packages (Amazon Linux 2023 uses dnf)
-echo "Installing packages..."
-dnf update -y
-dnf install -y httpd php php-mysqlnd php-gd php-mbstring php-xml php-curl php-zip unzip
-
-# Start and enable Apache (httpd on Amazon Linux)
-echo "Starting Apache..."
-systemctl start httpd
-systemctl enable httpd
-
-# Download application code from S3 with retry
-echo "Downloading WordPress from S3..."
-for i in {1..5}; do
-  aws s3 cp s3://chongzhihong-s3-bucket/wordpress.zip /tmp/wordpress.zip && break
-  echo "S3 download attempt $i failed, retrying in 10s..."
-  sleep 10
-done
-
-# Check if download succeeded
-if [ ! -f /tmp/wordpress.zip ]; then
-  echo "ERROR: Failed to download wordpress.zip from S3"
-  exit 1
-fi
-
-# Extract code
-echo "Extracting WordPress..."
-unzip -o /tmp/wordpress.zip -d /var/www/html/
-
-# Set permissions
-echo "Setting permissions..."
-chown -R apache:apache /var/www/html/
-chmod -R 755 /var/www/html/
-
-# Enable .htaccess (mod_rewrite for WordPress permalinks)
-echo "Configuring Apache for WordPress..."
-sed -i 's/AllowOverride None/AllowOverride All/g' /etc/httpd/conf/httpd.conf
-
-# Restart Apache to apply changes
-systemctl restart httpd
-
-echo "=== User data script completed at $(date) ==="
-EOF
-  )
+  user_data = base64encode(templatefile("${path.module}/user_data.sh.tpl", {
+    db_host     = var.db_host
+    db_name     = var.db_name
+    db_user     = var.db_user
+    db_password = var.db_password
+  }))
 
   tag_specifications {
     resource_type = "instance"

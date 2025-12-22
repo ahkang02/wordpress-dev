@@ -28,6 +28,12 @@ module "compute" {
   subnets          = module.network.private_subnet_ids
   security_groups  = [module.security.ec2_sg_id]
   target_group_arn = module.alb.target_group_arn
+  
+  # Pass DB details for user_data
+  db_host     = module.database.endpoint
+  db_name     = var.db_name
+  db_user     = var.db_user
+  db_password = var.db_password
 }
 
 module "database" {
